@@ -185,8 +185,8 @@
                   });
                });
 
-               $(".addOnSubmitBtn").click((event) => {
-                  const checkMenu = getSelectedMenu($(event.target).data("id"));
+               $(".addOnSubmitBtn").click(function (event) {
+                  const checkMenu = getSelectedMenu($(this).data("id"));
 
                   checkMenu.addon = selectedAddOn;
                   checkMenu.note = $("#note").val() ?? null;
@@ -194,7 +194,7 @@
                   setItem();
                   closeAddOnWindow();
 
-                  element("#text-note").innerText = `Note: ${checkMenu.note}`;
+                  element(`#note-${this.dataset.id}`).innerText = `Note: ${checkMenu.note}`;
                });
 
                const setTotalKeseluruhan = (param) => {
