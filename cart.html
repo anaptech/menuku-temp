@@ -191,10 +191,10 @@
                   checkMenu.addon = selectedAddOn;
                   checkMenu.note = $("#note").val() ?? null;
 
+                  element(`#note-${this.dataset.id}`).innerText = `Note: ${element("#note").value}`;
+
                   setItem();
                   closeAddOnWindow();
-
-                  element(`#note-${this.dataset.id}`).innerText = `Note: ${checkMenu.note}`;
                });
 
                const setTotalKeseluruhan = (param) => {
