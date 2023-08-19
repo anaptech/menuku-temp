@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head></head>
+   <body class="bg-d9">
+      <header class="px-4 sm:px-6 py-4 bg-header bg-cover bg-no-repeat">
+         <div class="flex items-center justify-between">
+            <a class="w-12 h-12 bg-f6 rounded-2xl flex items-center justify-center text-2xl" href="index.html">
+               <span class="material-symbols-outlined">chevron_left</span>
+            </a>
+            <h3 class="font-semibold text-[22px] md:text-2xl lg:text-3xl text-f9 leading-[18px]">Keranjang</h3>
+            <span>
+               <img class="h-9 lg:h-10" src="dist/img/icon/bell.png" alt="" />
+            </span>
+         </div>
+      </header>
+      <main class="relative overflow-hidden">
+         <section class="bg-f9 p-6">
+            <div class="grid xl:grid-cols-2 xl:gap-5 gap-y-4" id="grid-menu"></div>
+         </section>
+         <section class="bg-f9 px-6 pt-4 pb-28 mt-5 rounded-t-20px" id="payment-details">
+            <h5 class="font-bold text-sm sm:text-base text-black mb-3">Payment Details</h5>
+            <div class="relative mb-2">
+               <div class="flex items-center" id="option-detail-btn" role="button">
+                  <span class="font-bold text-sm sm:text-base mr-14">Dine In</span>
+                  <i class="ri-arrow-down-s-line text-danger h-5"></i>
+               </div>
+               <table class="w-full">
+                  <tr class="hidden" id="option-detail">
+                     <td class="font-light text-sm sm:text-base">Take Away</td>
+                     <td class="font-light text-sm sm:text-base text-end"></td>
+                  </tr>
+                  <tr>
+                     <td class="font-light text-sm sm:text-base">Nomor Tabel</td>
+                     <td class="font-light text-sm sm:text-base text-end">1</td>
+                  </tr>
+               </table>
+            </div>
+            <table class="w-full">
+               <tr>
+                  <td class="font-light text-sm sm:text-base">Jumlah Item</td>
+                  <td class="font-light text-sm sm:text-base text-end" id="jumlah-item"></td>
+               </tr>
+               <tr>
+                  <td class="font-light text-sm sm:text-base">Subtotal</td>
+                  <td class="font-light text-sm sm:text-base text-end" id="subtotal"></td>
+               </tr>
+               <tr>
+                  <td class="font-light text-sm sm:text-base">Tax</td>
+                  <td class="font-light text-sm sm:text-base text-end" id="tax">Rp6.500</td>
+               </tr>
+               <tr>
+                  <td class="font-light text-sm sm:text-base">SC</td>
+                  <td class="font-light text-sm sm:text-base text-end" id="sc">Rp6.500</td>
+               </tr>
+               <tr>
+                  <td class="font-extrabold text-sm sm:text-base pt-2">TOTAL</td>
+                  <td class="font-extrabold text-sm sm:text-base text-end pt-2" id="total"></td>
+               </tr>
+            </table>
+            <button class="w-max block py-4 px-10 mx-auto my-5 font-bold text-sm sm:text-base text-white bg-danger rounded-20px btnSubmit orderBtn" type="button">Submit Order</button>
+            <div class="flex items-center justify-center text-danger">
+               <i class="ri-information-line mr-1"></i>
+               <p class="font-light text-xs sm:text-sm h-4">Submit Order cannot be cancelled</p>
+            </div>
+         </section>
+         <section class="w-full absolute top-full -bottom-full transition-all duration-500" id="addOn">
+            <div class="h-full relative">
+               <div class="bg-f5 min-h-full max-h-full overflow-y-scroll pt-4 pb-24 rounded-t-20px">
+                  <div class="flex items-center justify-between px-6 mb-7">
+                     <span></span>
+                     <h4 class="font-bold lg:text-lg xl:text-xl">Tambahan Menu</h4>
+                     <i class="ri-close-line font-semibold text-lg xl:text-xl" role="button" id="hideAddOnBtn"></i>
+                  </div>
+                  <div id="listAddOn"></div>
+                  <div class="mb-3 px-6">
+                     <h5 class="font-bold text-sm sm:text-base xl:text-lg mb-3">Catatan <span class="font-normal text-7a">(Optional)</span></h5>
+                     <textarea class="w-full bg-f8 p-3 text-xs sm:text-sm lg:xl-base rounded-10px border border-bd focus-visible:outline-none" rows="6" placeholder="Mohon cantumkan pilihan menu anda" id="note"></textarea>
+                  </div>
+                  <div class="px-6">
+                     <button class="w-full py-3 text-center text-white bg-danger rounded-10px addOnSubmitBtn" type="button">Submit</button>
+                  </div>
+               </div>
+               s
+            </div>
+         </section>
+      </main>
+      <footer></footer>
+      <script src="dist/js/script.js"></script>
+      <script src="dist/js/layout.js"></script>
+      <script src="dist/js/components.js"></script>
+      <script src="https://code.jquery.com/jquery-3.6.3.min.js"></script>
+      <script src="dist/js/cart.js"></script>
+      <script src="https://code.iconify.design/3/3.0.0/iconify.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.16/dist/sweetalert2.all.min.js"></script>
+      <script>
+         let selectedAddOn = [],
+            menus = [],
+            menuDetail = [];
+
+         if (!cartData.length) {
+            element("main").innerHTML = "";
+            Swal.fire({
+               title: "",
+               text: "Keranjang kosong!",
+               icon: "info",
+               confirmButtonColor: "#CB1A12",
+            }).then(() => {
+               document.location.href = "index.html";
+            });
+         } else {
+            const closeAddOnWindow = () => {
+               element("#addOn").classList.remove("show");
+               $("#listAddOn").html("");
+               $("#note").val("");
+
+               selectedAddOn = [];
+            };
+
+            element("#hideAddOnBtn").addEventListener("click", () => closeAddOnWindow());
+
+            fetchData(`${baseURL}/api/menu.json`).then((result) => {
+               result.forEach((data) => {
+                  $(data.menu).each((index, item) => {
+                     menus.push(item);
+                     const selectedMenu = getSelectedMenu(item.id);
+
+                     if (selectedMenu) {
+                        element("#grid-menu").innerHTML += setGridMenu({
+                           menu: item,
+                           cart: selectedMenu,
+                        });
+                     }
+                  });
+               });
+            });
+
+            window.setTimeout(() => {
+               $(cartData).each((index, item) => {
+                  const cartMenu = menus.filter((menu) => menu.id == item.id)[0];
+
+                  menuDetail.push(cartMenu);
+               });
+
+               $(".decreaseBtn").each((index, element) => {
+                  $(element).click((event) => decreaseQuantity(event));
+               });
+
+               $(".increaseBtn").each((index, element) => {
+                  $(element).click((event) => increaseQuantity(event));
+               });
+
+               $(".showAddOnBtn").each((index, element) => {
+                  $(element).click((event) => {
+                     $(".addOnSubmitBtn").data("id", $(event.target).data("id"));
+
+                     const checkMenu = getSelectedMenu($(event.target).data("id"));
+
+                     $("#note").val(checkMenu.note);
+
+                     $(menuDetail).each((index, item) => {
+                        if (item.id == $(event.target).data("id")) {
+                           $(item.addon).each((index, menu) => {
+                              $("#addOn").addClass("show");
+                              $("#listAddOn").append(setListAddOn(menu));
+                           });
+                        }
+                     });
+
+                     $(".addOnId").each((index, item) => {
+                        const checkAddOn = getSelectedAddOn(checkMenu.addon, $(item).val());
+
+                        $(item).click(function (event) {
+                           if ($(this).is(":checked")) {
+                              selectedAddOn.push({ addon_id: $(this).val() });
+                           } else {
+                              selectedAddOn = selectedAddOn.filter((item2) => item2.addon_id !== $(this).val());
+                           }
+                        });
+
+                        if (checkAddOn) {
+                           selectedAddOn.push({ addon_id: checkAddOn.addon_id });
+                           $(item).val() == checkAddOn.addon_id ? (item.checked = true) : "";
+                        }
+                     });
+                  });
+               });
+
+               $(".addOnSubmitBtn").click((event) => {
+                  const checkMenu = getSelectedMenu($(event.target).data("id"));
+
+                  checkMenu.addon = selectedAddOn;
+                  checkMenu.note = $("#note").val() ?? null;
+
+                  setItem();
+                  closeAddOnWindow();
+               });
+
+               const setTotalKeseluruhan = (param) => {
+                  subtotalHargaPerMenu = [];
+
+                  // Subtotal harga per menu didapat dari harga per menu yang dikali dengan kuantitas
+                  for (const key in param.hargaPerMenu) {
+                     subtotalHargaPerMenu.push(param.hargaPerMenu[key] * param.quantity[key]);
+                  }
+
+                  subtotalKeseluruhan = 0;
+
+                  // Subtotal keseluruhan didapat dari subtotal harga per menu yang dijumlah dengan banyaknya menu
+                  for (const key in subtotalHargaPerMenu) {
+                     subtotalKeseluruhan += Number(subtotalHargaPerMenu[key]);
+                  }
+
+                  $("#subtotal").text(formatRupiah(subtotalKeseluruhan));
+
+                  const tax = formatHarga($("#tax").text()),
+                     sc = formatHarga($("#sc").text()),
+                     totalKeseluruhan = subtotalKeseluruhan + tax + sc;
+
+                  $("#total").text(formatRupiah(totalKeseluruhan));
+               };
+
+               let [items, quantity, hargaPerMenu] = [[], [], []];
+
+               $(".quantity").each((index, element) => {
+                  setSelectedMenu(element);
+
+                  items.push($(element).data("id"));
+                  quantity.push($(element).data("value"));
+
+                  const container = $(element).parents().get(2);
+                  const wrapper = $(container).children().get(0);
+                  const price = $(wrapper).children().get(1);
+
+                  $(price).text(formatRupiah(formatHarga($(price).text()) * $(element).data("value")));
+               });
+
+               $(menuDetail).each((index, item) => hargaPerMenu.push(Number(item.price)));
+
+               setTotalKeseluruhan({
+                  quantity: quantity,
+                  hargaPerMenu: hargaPerMenu,
+               });
+
+               /* INCREASE OR DECREASE BUTTON EVENT HANDLER [START] */
+               document.addEventListener("click", (event) => {
+                  const targetClass = event.target.classList;
+
+                  if (targetClass.contains("increaseBtn") || targetClass.contains("decreaseBtn")) {
+                     const [items, quantity] = [[], []];
+
+                     $(".quantity").each((index, element) => {
+                        setSelectedMenu(element);
+
+                        items.push($(element).data("id"));
+                        quantity.push($(element).data("value"));
+
+                        const container = $(element).parents().get(2);
+                        const wrapper = $(container).children().get(0);
+                        const price = $(wrapper).children().get(1);
+
+                        const selectedMenu = menuDetail.filter((item) => item.id == $(element).data("id"))[0];
+
+                        $(price).text(formatRupiah(selectedMenu.price * $(element).data("value")));
+                     });
+
+                     setTotalKeseluruhan({ quantity, hargaPerMenu });
+
+                     $("#jumlah-item").text(getMenuHasQuantity().length);
+                  }
+               });
+               /* INCREASE OR DECREASE BUTTON EVENT HANDLER [END] */
+
+               $("#jumlah-item").text(getMenuHasQuantity().length);
+
+               /* SUBMIT BUTTON EVENT HANDLER [START] */
+               $(".orderBtn").click(() => {
+                  const paramSwal = {
+                     title: "Pesananmu Berhasil!",
+                     text: "Ditunggu hidangannya",
+                     confirmButtonColor: "#CB1A12",
+                     confirmButtonText: "Yuk, lanjut!!!",
+                     iconHtml: "<img src='dist/img/icon/alert-ok.png'>",
+                     customClass: {
+                        icon: "!border-0",
+                     },
+                  };
+
+                  Swal.fire(paramSwal)
+                     .then(() => orderMenu({ menu: cartData }))
+                     .then(() => (document.location.href = `order-summary.html`));
+               });
+               /* SUBMIT BUTTON EVENT HANDLER [END] */
+            }, 1000);
+         }
+         // element("#jumlah-item ").innerText = cartData.length;
+
+         // /* [START] Quantity */
+         // let quantity = "";
+         // element(".quantity", true).forEach((item) => {
+         //    quantity += `${item.dataset.value},`;
+
+         //    setSelectedMenu(item);
+         //    // refreshCart();
+         // });
+
+         // quantity = stringToArray(quantity);
+         // /* [END] Quantity */
+
+         // /* [START] Harga Per Menu */
+         // let hargaPerMenu = "";
+
+         // element(".harga", true).forEach((item) => (hargaPerMenu += `${formatHarga(item.innerText)},`));
+
+         // hargaPerMenu = stringToArray(hargaPerMenu);
+         // /* [END] Harga Per Menu */
+
+         // /* [START] Subtotal Harga Per Menu */
+         // let subtotalHargaPerMenu = "";
+
+         // // Subtotal harga per menu didapat dari harga permenu yang dikali dengan kuantitas
+         // for (const key in hargaPerMenu) {
+         //    subtotalHargaPerMenu += `${hargaPerMenu[key] * quantity[key]},`;
+         // }
+
+         // subtotalHargaPerMenu = stringToArray(subtotalHargaPerMenu);
+         // /* [END] Subtotal Harga Per Menu */
+
+         // /* [START] Subtotal Keseluruhan */
+         // let subtotalKeseluruhan = 0;
+
+         // // Subtotal keseluruhan didapat dari subtotal harga per menu yang dijumlah dengan banyaknya menu
+         // for (const key in subtotalHargaPerMenu) {
+         //    subtotalKeseluruhan += Number(subtotalHargaPerMenu[key]);
+         // }
+
+         // element("#subtotal").innerText = formatRupiah(subtotalKeseluruhan);
+         // /* [END] Subtotal Keseluruhan */
+
+         // const tax = formatHarga(element("#tax").innerText),
+         //    sc = formatHarga(element("#sc").innerText);
+
+         // const totalKeseluruhan = subtotalKeseluruhan + tax + sc;
+
+         // element("#total").innerText = formatRupiah(totalKeseluruhan);
+
+         // element("#option-detail-btn").addEventListener("click", (e) => {
+         //    element("#option-detail-btn").classList.toggle("active");
+         //    element("#option-detail").classList.toggle("hidden");
+         // });
+      </script>
+   </body>
+</html>

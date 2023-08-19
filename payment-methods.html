@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head></head>
+   <body class="bg-white">
+      <header class="px-4 sm:px-6 py-4 bg-header bg-cover bg-no-repeat">
+         <div class="flex items-center justify-between">
+            <a class="w-12 h-12 bg-f6 rounded-2xl flex items-center justify-center text-2xl" href="order-summary.html">
+               <span class="material-symbols-outlined">chevron_left</span>
+            </a>
+            <h3 class="font-semibold text-[22px] md:text-2xl lg:text-3xl text-f9 leading-[18px]">Metode Pembayaran</h3>
+            <span></span>
+         </div>
+      </header>
+      <main class="px-4 md:px-6 pt-4 md:pt-6">
+         <div class="w-full p-3 flex items-center gap-x-4 relative cursor-pointer bg-white shadow-[2px_2px_4px_rgba(203,26,18,0.1)] rounded-20px mb-6" data-value="${param.text}">
+            <img class="w-9 pointer-events-none" src="dist/img/icon/shopping-cart.png" alt="" />
+            <div class="block pointer-events-none">
+               <span class="font-bold">Total</span>
+               <p class="text-xs total"></p>
+            </div>
+         </div>
+         <h3 class="font-bold text-sm sm:text-base lg:text-lg uppercase mb-3">Pilih Metode Pembayaran</h3>
+         <div class="grid grid-cols-1 gap-y-4" id="metode-pembayaran"></div>
+      </main>
+      <footer></footer>
+      <script src="dist/js/script.js"></script>
+      <script src="dist/js/layout.js"></script>
+      <script src="dist/js/components.js"></script>
+      <script src="dist/js/cart.js"></script>
+      <script src="https://code.iconify.design/3/3.0.0/iconify.min.js"></script>
+      <script>
+         element(".total").innerText = formatRupiah(tempPayment.total);
+
+         fetchData(`${baseURL}/api/paymentMethods.json`).then((result) => result.forEach((data) => (element("#metode-pembayaran").innerHTML += setPaymentMethods(data))));
+
+         window.setTimeout(() => {
+            const [metodePembayaran, checkboxList] = [[], []];
+            element(".metode-pembayaran", true).forEach((element) => {
+               metodePembayaran.push(element);
+
+               element.addEventListener("click", function () {
+                  const checkbox = this.children[2].children[0].children[0];
+
+                  checkbox.checked = true;
+
+                  deactivateWhenAnotherActive({
+                     nodeList: metodePembayaran,
+                     targetEvent: this,
+                     checkboxList: checkboxList,
+                     checkedCheckbox: checkbox,
+                  });
+
+                  if (checkbox.checked) {
+                     tempPayment.method = this.dataset.value;
+
+                     setItem({ key: "temp-payment", value: tempPayment });
+                  }
+               });
+
+               if (tempPayment.method == element.dataset.value) {
+                  element.classList.add("active");
+                  element.querySelector(".input-metode-pembayaran").checked = true;
+               }
+            });
+
+            element(".input-metode-pembayaran", true).forEach((element) => {
+               checkboxList.push(element);
+            });
+         }, 1000);
+      </script>
+   </body>
+</html>

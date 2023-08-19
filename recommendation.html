@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head></head>
+   <body>
+      <header class="px-4 sm:px-6 py-4">
+         <div class="flex items-center justify-between">
+            <a class="w-12 h-12 bg-f6 rounded-2xl flex items-center justify-center text-2xl" href="index.html">
+               <span class="material-symbols-outlined">chevron_left</span>
+            </a>
+            <h3 class="text-lg">Recommendation</h3>
+            <span></span>
+         </div>
+      </header>
+      <main class="relative pb-24 overflow-hidden">
+         <section class="px-4 sm:px-6 py-3">
+            <div class="grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-2 lg:gap-4" id="grid-menu"></div>
+         </section>
+      </main>
+      <footer></footer>
+      <script src="dist/js/script.js"></script>
+      <script src="dist/js/layout.js"></script>
+      <script src="dist/js/components.js"></script>
+      <script src="dist/js/cart.js"></script>
+      <script src="https://code.iconify.design/3/3.0.0/iconify.min.js"></script>
+      <script>
+         fetchData(`${baseURL}/api/menu.json`).then((result) => {
+            result.forEach((data) => {
+               if (data.menu.length) {
+                  data.menu.forEach((menu) => {
+                     Number(menu.is_recommendation) ? (element("#grid-menu").innerHTML += setGridRecommendation(menu)) : null;
+                  });
+               }
+            });
+         });
+      </script>
+   </body>
+</html>

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head></head>
+   <body>
+      <header class="relative sm:h-[360px] overflow-hidden rounded-b-20px">
+         <img src="dist/img/dapur-betawi.png" alt="Dapur Betawi" />
+         <button class="absolute top-8 right-8 w-[50px] h-[50px] flex items-center justify-center bg-f6 rounded-[15px] z-10" id="btnSearch">
+            <i class="ri-search-line text-2xl pointer-events-none"></i>
+         </button>
+         <input class="absolute top-8 right-8 w-0 h-[50px] bg-f6 rounded-[15px] pl-4 pr-[34px] font-medium text-xs sm:text-sm lg:text-base text-8a focus-visible:outline-none transition-width duration-500" type="search" placeholder="Cari makanan" id="inputSearch" />
+         <button type="button" class="absolute top-8 left-8 w-[50px] h-[50px] flex items-center justify-center bg-f6 rounded-[15px] invisible">
+            <i class="ri-arrow-left-s-line text-2xl pointer-events-none"></i>
+         </button>
+         <div class="w-full absolute bottom-0 bg-[rgba(61,47,47,0.3)] backdrop-blur-10px">
+            <div class="px-6 flex justify-between items-center">
+               <div class="pt-5 pb-4">
+                  <h1 class="font-bold text-xl lg:text-2xl xl:text-3xl text-white leading-3">Dapur Betawi</h1>
+                  <p class="font-light text-xs md:text-sm lg:text-base xl:text-lg text-white mt-3 lg:mt-1">Indonesian Restaurant Food</p>
+                  <div class="flex items-center gap-[3px] mt-1 lg:mb-2">
+                     <i class="ri-star-fill text-xs md:text-sm lg:text-base xl:text-lg text-warning"></i>
+                     <i class="ri-star-fill text-xs md:text-sm lg:text-base xl:text-lg text-warning"></i>
+                     <i class="ri-star-fill text-xs md:text-sm lg:text-base xl:text-lg text-warning"></i>
+                     <i class="ri-star-fill text-xs md:text-sm lg:text-base xl:text-lg text-warning"></i>
+                     <i class="ri-star-fill text-xs md:text-sm lg:text-base xl:text-lg text-warning"></i>
+                     <span class="font-manrope font-bold text-xs md:text-sm lg:text-base xl:text-lg h-[15px] md:h-[19px] lg:h-[22px] xl:h-[28px] text-white ml-3">4,9 km</span>
+                  </div>
+               </div>
+               <img class="h-9 md:h-10 lg:h-12 xl:h-14" src="dist/img/icon/bell.png" alt="" />
+            </div>
+         </div>
+      </header>
+
+      <section class="pl-4 sm:pl-4 md:pl-4" id="categories">
+         <div class="swiper swiper-categories">
+            <div class="swiper-wrapper py-5" id="grid-category"></div>
+         </div>
+      </section>
+
+      <section class="px-4 sm:px-6" id="recommendation">
+         <div class="flex items-center justify-between pb-4 md:pt-1 lg:pt-2">
+            <h3 class="text-sm md:text-base lg:text-lg xl:text-xl">Recommendation</h3>
+            <a class="text-xs md:text-sm lg:text-base xl:text-lg text-8a font-medium" href="recommendation.html">See All</a>
+         </div>
+         <div class="swiper swiper-recommendation">
+            <div class="swiper-wrapper" id="grid-recommendation"></div>
+         </div>
+      </section>
+
+      <section class="px-4 sm:px-6" id="makanan">
+         <div class="flex items-center justify-between pt-6 pb-4">
+            <h3 class="text-sm md:text-base lg:text-lg xl:text-xl">Makanan</h3>
+            <span></span>
+         </div>
+         <div class="grid lg:grid-cols-2 lg:gap-x-5 gap-y-5" id="grid-makanan"></div>
+      </section>
+      <section class="px-4 sm:px-6 pb-36" id="minuman">
+         <div class="flex items-center justify-between pt-6 pb-4">
+            <h3 class="text-sm md:text-base lg:text-lg xl:text-xl">Minuman</h3>
+            <span></span>
+         </div>
+         <div class="grid lg:grid-cols-2 lg:gap-x-5 gap-y-5" id="grid-minuman"></div>
+      </section>
+      <!-- <div class="fixed bottom-24 left-1/2 -translate-x-1/2 z-[9999] invisible" id="btn-submit">
+         <a class="text-sm leading-normal text-white px-4 py-2 bg-[#CB1A12] rounded-10px" href="cart.html">Submit</a>
+      </div> -->
+      <footer></footer>
+      <script src="dist/js/script.js"></script>
+      <script src="dist/js/layout.js"></script>
+      <script src="dist/js/components.js"></script>
+      <script src="https://code.jquery.com/jquery-3.6.3.min.js"></script>
+      <script src="dist/js/cart.js"></script>
+      <script src="https://code.iconify.design/3/3.0.0/iconify.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
+      <script>
+         // element("#btnSearch").addEventListener("click", () => {
+         //    if (element(".btn-search-active")) {
+         //       console.log("submitted");
+         //    } else {
+         //       element("#btnSearch").classList.add("btn-search-active");
+         //       element("#inputSearch").classList.toggle("!w-[285px]");
+         //       element("#inputSearch").classList.toggle("!pr-[34px]");
+         //    }
+         // });
+
+         // document.addEventListener("click", function (e) {
+         //    if (e.target != element("#btnSearch") && e.target != element("#inputSearch")) {
+         //       element("#btnSearch").classList.remove("btn-search-active");
+         //       element("#inputSearch").classList.remove("!pr-[34px]");
+         //       element("#inputSearch").classList.remove("!w-[285px]");
+         //    }
+         // });
+
+         fetchData(`${baseURL}/api/menuCategory.json`).then((result) => {
+            result.forEach((data) => (element("#grid-category").innerHTML += setGridCategory(data)));
+
+            const btnList = [];
+            $("button").each((index, element) => {
+               if ($(element).hasClass("category")) {
+                  btnList.push(element);
+
+                  $(element).click((event) => {
+                     deactivateWhenAnotherActive({
+                        nodeList: btnList,
+                        targetEvent: event.target,
+                     });
+                  });
+               }
+            });
+         });
+
+         // const swiperCategories = new Swiper(".swiper-categories", {
+         //    slidesPerView: "auto",
+         //    spaceBetween: 15,
+         //    grabCursor: true,
+         // });
+
+         // const swiperRecommendation = new Swiper(".swiper-recommendation", {
+         //    slidesPerView: "auto",
+         //    spaceBetween: 10,
+         //    grabCursor: true,
+         // });
+
+         fetchData(`${baseURL}/api/menu.json`).then((result) => {
+            result.forEach((data) => {
+               /* Cari data menu yang direkomendasikan */
+               // if (data.rekomendasi == true) {
+               //    element("#grid-recommendation").innerHTML += setCarouselRecommendation(data);
+               // }
+
+               /* Cari data menu yang kategorinya adalah makanan */
+               if (data.type_menu == "Makanan") {
+                  $(data.menu).each((index, item) => {
+                     element("#grid-makanan").innerHTML += setGridFood({
+                        menu: item,
+                        cart: getSelectedMenu(item.id),
+                     });
+                  });
+
+                  /* Cari data menu yang kategorinya adalah minuman */
+               }
+            });
+
+            $(".decreaseBtn").each((index, element) => {
+               $(element).click((event) => decreaseQuantity(event));
+            });
+
+            $(".increaseBtn").each((index, element) => {
+               $(element).click((event) => increaseQuantity(event));
+            });
+
+            $(".quantity").each((index, element) => setSelectedMenu(element));
+
+            const listMenuElements = [];
+
+            $(".list-menu").each((index, element) => listMenuElements.push(element));
+
+            const lastMenuElement = listMenuElements.pop();
+
+            $(lastMenuElement).addClass("pb-36");
+         });
+
+         $("#btnSearch").click((e) => {
+            if ($(e.target).hasClass(".btn-search-active")) {
+            } else {
+               $(e.target).addClass("btn-search-active");
+               $("#inputSearch").addClass("!w-[285px]");
+               $("#inputSearch").addClass("!pr-[34px]");
+            }
+         });
+
+         $(document).click((e) => {
+            if (e.target != $("#btnSearch")[0] && e.target != $("#inputSearch")[0]) {
+               $("#btnSearch").removeClass("btn-search-active");
+               $("#inputSearch").removeClass("!pr-[34px]");
+               $("#inputSearch").removeClass("!w-[285px]");
+            }
+         });
+
+         const swiperCategories = new Swiper(".swiper-categories", {
+            slidesPerView: "auto",
+            spaceBetween: 15,
+            grabCursor: true,
+         });
+
+         const swiperRecommendation = new Swiper(".swiper-recommendation", {
+            slidesPerView: "auto",
+            spaceBetween: 10,
+            grabCursor: true,
+         });
+
+         async function get(url, options = {}) {
+            const response = await fetch(url, options);
+            const result = await response.json();
+            return result;
+         }
+      </script>
+   </body>
+</html>

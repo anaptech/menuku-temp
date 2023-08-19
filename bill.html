@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head></head>
+   <body class="bg-f9 px-4 sm:px-6 py-4">
+      <header>
+         <div class="flex items-center justify-between">
+            <a class="w-12 h-12 bg-f6 rounded-2xl flex items-center justify-center text-2xl" href="index.html">
+               <span class="material-symbols-outlined">chevron_left</span>
+            </a>
+            <h3 class="font-semibold text-[22px] md:text-2xl lg:text-3xl leading-[18px]">Bill</h3>
+            <div class="w-12 flex items-center justify-center">
+               <span class="material-symbols-outlined lg:!text-3xl" role="button" onclick="capture()" title="Simpan Halaman">print</span>
+            </div>
+         </div>
+      </header>
+      <main>
+         <section class="text-sm md:text-base lg:text-lg xl:text-xl text-center pt-1">
+            <h3 class="font-semibold text-center text-[22px] pb-3 hidden" id="pageTitle">Bill</h3>
+            <p>"Suka Suka"</p>
+            <p>Jl Pondok Kelapa Raya 99</p>
+            <p>Duren Sawit Jakarta Timur</p>
+            <p>Telp. 021415195812</p>
+         </section>
+         <section class="text-sm md:text-base pt-4">
+            <div class="flex justify-between items-center" id="no-pesanan">
+               <p>No. Pesanan</p>
+               <p>20103010</p>
+            </div>
+            <div class="flex justify-between items-center" id="no-meja">
+               <p>No. Meja</p>
+               <p>2</p>
+            </div>
+            <div class="flex justify-between items-center" id="tanggal">
+               <p>Tanggal</p>
+               <p>05.30, 12 Januari 2022</p>
+            </div>
+         </section>
+         <section class="grid grid-cols-1 gap-y-2 pt-5">
+            <h3 class="text-sm md:text-base lg:text-lg xl:text-xl font-bold">Detail Pesanan</h3>
+            <div id="detail-pesanan"></div>
+            <div id="detail-pembayaran"></div>
+         </section>
+         <section class="flex flex-col items-center gap-y-2 pt-7 pb-24">
+            <p class="font-bold">Terima Kasih</p>
+            <img class="w-24" src="dist/img/logo.png" alt="" />
+         </section>
+      </main>
+      <footer data-active="assignment"></footer>
+      <script src="dist/js/script.js"></script>
+      <script src="dist/js/layout.js"></script>
+      <script src="dist/js/components.js"></script>
+      <script src="dist/js/cart.js"></script>
+      <script src="https://code.iconify.design/3/3.0.0/iconify.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.3.4/html2canvas.min.js"></script>
+      <script>
+         let [menuDetail, paymentMethod, sc, tax, total] = ["", {}, 0, 0, 0];
+
+         const [menus, subharga] = [[], []];
+
+         fetchData(`${baseURL}/api/menu.json`).then((result) => {
+            result.forEach((data) => {
+               data.menu.forEach((item) => {
+                  menus.push(item);
+                  const selectedMenu = getOrderedMenu(item.id);
+
+                  selectedMenu ? (element("#detail-pesanan").innerHTML += setBillMenu({ menu: item, cart: selectedMenu })) : null;
+               });
+            });
+         });
+
+         fetchData(`${baseURL}/api/paymentMethods.json`).then((result) =>
+            result.forEach((data) => {
+               const selectedPaymentMethod = getSelectedPaymentMethod(data, orderedData.payment_method);
+
+               selectedPaymentMethod ? (paymentMethod = selectedPaymentMethod) : null;
+            })
+         );
+
+         element("#no-pesanan").children[1].innerText = orderedData.order_id;
+         element("#no-meja").children[1].innerText = orderedData.table_number;
+         element("#tanggal").children[1].innerText = orderedData.date;
+
+         window.setTimeout(() => {
+            menuDetail = getFilteredMenu(menus);
+
+            const quantityElement = [];
+
+            element("#detail-pembayaran").innerHTML = setBillPayment({
+               subtotal: getSubtotal(subharga),
+               paymentMethod,
+            });
+
+            element(".harga", true).forEach((element) => subharga.push(formatHarga(element.innerText)));
+            element(".quantity", true).forEach((element) => quantityElement.push(Number(element.dataset.value)));
+
+            setTotalKeseluruhan({
+               quantity: quantityElement,
+               hargaPerMenu: getHargaPerMenu(menuDetail),
+            });
+         }, 1500);
+
+         // window.setTimeout(() => {
+         //    let metodePembayaranImg;
+
+         //    fetchData(`${baseURL}/api/paymentMethods.json`).then((result) => {
+         //       result.forEach((data) => {
+         //          const client = cartData.filter((item) => item.metodePembayaran == data.text);
+         //          if (client.length > 0) {
+         //             element("#detail-pembayaran").innerHTML = setDetailPembayaran({
+         //                subtotal: subtotal,
+         //                metodePembelian: client[0].metodePembelian,
+         //                metodePembayaran: data,
+         //             });
+         //          }
+         //       });
+
+         //       metodePembayaranImg = element(".metode-pembayaran").children[1].children[0];
+
+         //       sc += Number(element(".sc").dataset.value);
+         //       tax += Number(element(".tax").dataset.value);
+         //       total += subtotal + sc + tax;
+
+         //       element(".total").dataset.value = total;
+         //       element(".total").children[1].innerText = formatRupiah(`Rp${total}`);
+         //    });
+
+         const setBillPayment = (param) => {
+            return `
+               <div class="flex items-center justify-between">
+                  <p class="font-light text-xs sm:text-sm lg:text-base xl:text-lg">Subtotal</p>
+                  <p class="font-light text-xs sm:text-sm lg:text-base xl:text-lg" id="subtotal"></p>
+               </div>
+               <div class="flex items-center justify-between">
+                  <p class="font-light text-xs sm:text-sm lg:text-base xl:text-lg">SC</p>
+                  <p class="font-light text-xs sm:text-sm lg:text-base xl:text-lg" id="sc">Rp6.500</p>
+               </div>
+               <div class="flex items-center justify-between">
+                  <p class="font-light text-xs sm:text-sm lg:text-base xl:text-lg">Tax</p>
+                  <p class="font-light text-xs sm:text-sm lg:text-base xl:text-lg" id="tax">Rp6.500</p>
+               </div>
+               <div class="flex items-center justify-between metode-pembayaran pt-1">
+                  <p class="font-light text-sm sm:text-base lg:text-lg">Metode Pembayaran</p>
+                  <div class="flex items-center gap-x-2" id="metode-pembayaran">
+                     <img class="h-4 lg:h-5" src="dist/img/icon/${param.paymentMethod.img}" alt="${param.paymentMethod.text}" />
+                     <span class="text-sm sm:text-base lg:text-lg">${param.paymentMethod.text}</span>
+                  </div>
+               </div>
+               <div class="flex items-center justify-between pt-1">
+                  <p class="font-extrabold text-sm sm:text-base lg:text-lg xl:text-xl">TOTAL</p>
+                  <p class="font-extrabold text-sm sm:text-base lg:text-lg xl:text-xl" id="total"></p>
+               </div>
+            `;
+         };
+
+         const setTotalKeseluruhan = (param) => {
+            subtotalHargaPerMenu = [];
+
+            // Subtotal harga per menu didapat dari harga per menu yang dikali dengan kuantitas
+            for (const key in param.hargaPerMenu) {
+               subtotalHargaPerMenu.push(param.hargaPerMenu[key] * param.quantity[key]);
+            }
+
+            subtotalKeseluruhan = 0;
+
+            // Subtotal keseluruhan didapat dari subtotal harga per menu yang dijumlah dengan banyaknya menu
+            for (const key in subtotalHargaPerMenu) {
+               subtotalKeseluruhan += Number(subtotalHargaPerMenu[key]);
+            }
+
+            element("#subtotal").innerText = formatRupiah(subtotalKeseluruhan);
+
+            const tax = formatHarga(element("#tax").innerText),
+               sc = formatHarga(element("#sc").innerText),
+               totalKeseluruhan = subtotalKeseluruhan + tax + sc;
+
+            element("#total").innerText = formatRupiah(totalKeseluruhan);
+         };
+
+         const capture = () => {
+            element("#metode-pembayaran").children[0].classList.add("hidden");
+            element("main").classList.add("px-4");
+            element("#pageTitle").classList.remove("hidden");
+            element(".pb-24").classList.replace("pb-24", "pb-4");
+
+            html2canvas(element("main")).then((canvas) => {
+               let a = document.createElement("a");
+               a.download = "bill.png";
+               a.href = canvas.toDataURL("image/png");
+               a.click();
+               document.location.reload();
+            });
+         };
+      </script>
+   </body>
+</html>

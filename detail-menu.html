@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head></head>
+   <body class="bg-gradient min-h-screen">
+      <header class="absolute left-5 top-5 z-50">
+         <a class="w-12 h-12 bg-f6 rounded-2xl flex items-center justify-center text-2xl" href="index.html">
+            <span class="material-symbols-outlined">chevron_left</span>
+         </a>
+      </header>
+      <main class="relative pb-24 overflow-hidden" id="detail-menu"></main>
+      <footer></footer>
+      <script src="dist/js/script.js"></script>
+      <script src="dist/js/layout.js"></script>
+      <script src="dist/js/components.js"></script>
+      <script src="https://code.jquery.com/jquery-3.6.3.min.js"></script>
+      <script src="dist/js/cart.js"></script>
+      <script src="https://code.iconify.design/3/3.0.0/iconify.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.16/dist/sweetalert2.all.min.js"></script>
+      <script>
+         let menuDetail = [];
+
+         fetchData(`${baseURL}/api/menu.json`).then((result) => {
+            result.forEach((data) => {
+               if (data.menu.length) {
+                  data.menu.forEach((menu) => {
+                     if (menu.id == myURL.searchParams.get("id")) {
+                        menuDetail = menu;
+
+                        const checkMenu = getSelectedMenu(menu.id);
+
+                        element("#detail-menu").innerHTML += setMenuDetail({ menu, cart: checkMenu, currentPage });
+                     }
+                  });
+               }
+            });
+         });
+
+         window.setTimeout(() => {
+            $(".decreaseBtn").each((index, element) => {
+               $(element).click((event) => decreaseQuantity(event));
+            });
+
+            $(".increaseBtn").each((index, element) => {
+               $(element).click((event) => increaseQuantity(event));
+            });
+
+            $(".quantity").each((index, element) => setSelectedMenu(element));
+
+            element(".btnSubmit").addEventListener("click", () => {
+               const paramSwal = {
+                  title: "",
+                  text: "Berhasil ditambahkan ke keranjang!",
+                  icon: "success",
+                  confirmButtonColor: "#CB1A12",
+                  iconHtml: "<img src='dist/img/icon/alert-ok.png'>",
+                  customClass: {
+                     icon: "!border-0",
+                  },
+               };
+
+               Swal.fire(paramSwal).then(() => {
+                  document.location.href = "cart.html";
+               });
+            });
+         }, 1500);
+      </script>
+   </body>
+</html>

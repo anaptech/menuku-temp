@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head></head>
+   <body class="bg-d9">
+      <header class="px-4 sm:px-6 py-4 bg-f9">
+         <div class="flex items-center justify-between">
+            <a class="w-12 h-12 bg-f6 rounded-2xl flex items-center justify-center text-2xl" href="index.html">
+               <span class="material-symbols-outlined">chevron_left</span>
+            </a>
+            <h3 class="font-semibold text-center text-[22px] md:text-2xl lg:text-3xl leading-6">Rincian Pemesanan</h3>
+            <span>
+               <img class="h-9 lg:h-10" src="dist/img/icon/bell.png" alt="" />
+            </span>
+         </div>
+      </header>
+      <main>
+         <section class="grid grid-cols-1 gap-y-2 px-4 sm:px-6 py-4 bg-f9 mb-4" id="grid-menu">
+            <div class="detail-pembayaran"></div>
+         </section>
+         <section class="grid grid-cols-1 gap-y-2 px-4 sm:px-6 pt-4 pb-24 bg-f9 rounded-t-20px">
+            <div class="font-light text-sm lg:text-base" id="detail-klien"></div>
+            <div class="flex items-center justify-between font-extrabold text-sm sm:text-base pt-3 totalKeseluruhan">
+               <p>ALL TOTAL</p>
+               <p></p>
+            </div>
+            <div class="flex items-center justify-between pt-3">
+               <a class="flex items-center gap-x-3 select-payment" href="payment-methods.html">
+                  <img class="w-9" />
+                  <span class="text-sm"></span>
+                  <i class="ri-arrow-down-s-line text-base h-[23px]"></i>
+               </a>
+               <button class="px-9 py-3 font-bold text-sm md:text-base text-white bg-danger rounded-20px" id="btn-bayar">Bayar</button>
+            </div>
+         </section>
+      </main>
+      <footer></footer>
+      <script src="dist/js/script.js"></script>
+      <script src="dist/js/layout.js"></script>
+      <script src="dist/js/components.js"></script>
+      <script src="https://code.jquery.com/jquery-3.6.3.min.js"></script>
+      <script src="dist/js/cart.js"></script>
+      <script src="https://code.iconify.design/3/3.0.0/iconify.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.16/dist/sweetalert2.all.min.js"></script>
+      <script>
+         if (!orderedData.order_id) {
+            element("main").innerHTML = "";
+
+            const paramSwal = {
+               title: "",
+               text: "Kamu belum melakukan pemesanan!",
+               icon: "info",
+               confirmButtonColor: "#CB1A12",
+            };
+
+            Swal.fire(paramSwal).then(() => {
+               document.location.href = "index.html";
+            });
+         } else if (orderedData.paid) {
+            element("main").innerHTML = "";
+
+            const paramSwal = {
+               title: "",
+               text: "Kamu sudah melakukan pembayaran!",
+               icon: "success",
+               confirmButtonColor: "#CB1A12",
+            };
+
+            Swal.fire(paramSwal).then(() => {
+               document.location.href = "bill.html";
+            });
+         } else {
+            const menus = [];
+
+            setClientDetail({
+               order_id: orderedData.order_id,
+               table_number: orderedData.table_number,
+            });
+
+            const detailPembayaran = createElement("div");
+
+            detailPembayaran.id = "detail-pembayaran";
+            detailPembayaran.classList.add("font-light", "text-xs", "sm:text-sm", "lg:text-base");
+
+            const harga = [];
+            let [subtotal, sc, tax, total] = [0, 0, 0, 0];
+
+            fetchData(`${baseURL}/api/paymentMethods.json`).then((result) => {
+               result.forEach((data) => {
+                  if (data.text == tempPayment.method) {
+                     element(".select-payment").children[0].src = `dist/img/icon/${data.img}`;
+                     element(".select-payment").children[0].alt = tempPayment.method;
+                  } else if (!tempPayment.method) {
+                     element(".select-payment").children[0].src = "dist/img/icon/cash.png";
+                     element(".select-payment").children[0].alt = "Cash";
+                  }
+               });
+            });
+
+            fetchData(`${baseURL}/api/menu.json`).then((result) => {
+               result.forEach((data) => {
+                  $(data.menu).each((index, item) => {
+                     menus.push(item);
+                     const orderedMenu = getOrderedMenu(item.id);
+
+                     if (orderedMenu) {
+                        element("#grid-menu").innerHTML += setOrderedMenu({
+                           menu: item,
+                           cart: orderedMenu,
+                        });
+                     }
+                  });
+               });
+            });
+
+            window.setTimeout(() => {
+               element(".harga", true).forEach((item) => {
+                  harga.push(formatHarga(item.innerText));
+               });
+
+               for (const key in harga) {
+                  subtotal += Number(harga[key]);
+               }
+
+               detailPembayaran.innerHTML += setPaymentDetail({
+                  subtotal: subtotal,
+                  sc: 5000,
+                  tax: 6500,
+               });
+
+               element("#grid-menu").append(detailPembayaran);
+
+               sc += Number(element(".sc").dataset.value);
+               tax += Number(element(".tax").dataset.value);
+               total += subtotal + sc + tax;
+
+               element(".total").dataset.value = total;
+               element(".total").children[1].innerText = formatRupiah(total);
+               element(".totalKeseluruhan").children[1].innerText = formatRupiah(total);
+
+               element(".select-payment").addEventListener("click", function () {
+                  tempPayment.total = total;
+
+                  setItem({ key: "temp-payment", value: tempPayment });
+               });
+
+               element(".select-payment").children[1].innerText = tempPayment.method ?? "Cash";
+            }, 1000);
+
+            element("#btn-bayar").addEventListener("click", () => {
+               const paramSwal = {
+                  title: "Pembayaran Berhasil!",
+                  text: "Pembayaranmu sudah diproses",
+                  icon: "success",
+                  confirmButtonColor: "#CB1A12",
+                  confirmButtonText: "Yuk, lanjut!!!",
+                  iconHtml: "<img src='dist/img/icon/alert-success.png' class='alert-icon-checklist'>",
+                  customClass: {
+                     icon: "!border-0",
+                  },
+               };
+
+               const date = new Date(),
+                  month = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"],
+                  dateTime = `${date.getDate()} ${month[date.getMonth()]} ${date.getFullYear()}, ${date.getHours()}.${date.getMinutes()}`;
+
+               Swal.fire(paramSwal)
+                  .then(() => {
+                     orderedData.payment_method = tempPayment.method ?? "Cash";
+                     orderedData.date = dateTime;
+                     orderedData.paid = true;
+
+                     tempPayment = {};
+                  })
+                  .then(() => {
+                     setItem({ key: "ordered", value: orderedData });
+                     setItem({ key: "temp-payment", value: tempPayment });
+                     document.location.href = "bill.html";
+                  });
+            });
+         }
+      </script>
+   </body>
+</html>
