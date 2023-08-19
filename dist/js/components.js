@@ -126,7 +126,7 @@ const setGridMenu = (param) => {
                <h3 class="font-semibold text-lg lg:text-xl">${param.menu.name}</h3>
                <h2 class="font-semibold text-sm lg:text-base harga">${formatRupiah(param.menu.price)}</h2>
             </div>
-            <p class="text-8a text-[10px] lg:text-sm leading-[13px] mb-3">Note: ${param.cart.note ?? ""}</p>
+            <p class="text-8a text-[10px] lg:text-sm leading-[13px] mb-3" id="text-note">Note: ${param.cart.note ?? ""}</p>
             <div class="flex items-center justify-between">
                <a class="font-bold text-[#FF7B29] text-[10px] lg:text-sm leading-[13px] showAddOnBtn" data-id=${param.menu.id} role="button">Edit</a>
                <div class="flex items-center justify-end">
