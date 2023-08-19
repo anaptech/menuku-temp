@@ -31,7 +31,7 @@
       <script>
          element(".total").innerText = formatRupiah(tempPayment.total);
 
-         fetchData(`${baseURL}/api/paymentMethods.json`).then((result) => result.forEach((data) => (element("#metode-pembayaran").innerHTML += setPaymentMethods(data))));
+         fetchData(`${baseURL}/menuku-temp/api/paymentMethods.json`).then((result) => result.forEach((data) => (element("#metode-pembayaran").innerHTML += setPaymentMethods(data))));
 
          window.setTimeout(() => {
             const [metodePembayaran, checkboxList] = [[], []];

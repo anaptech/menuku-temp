@@ -1,0 +1,14 @@
+[
+   {
+      "text": "Cash",
+      "img": "cash.png"
+   },
+   {
+      "text": "Credit-Debit",
+      "img": "credit-debit.png"
+   },
+   {
+      "text": "QRIS",
+      "img": "qris.png"
+   }
+]

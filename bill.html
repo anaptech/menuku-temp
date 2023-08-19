@@ -68,7 +68,7 @@
             });
          });
 
-         fetchData(`${baseURL}/api/paymentMethods.json`).then((result) =>
+         fetchData(`${baseURL}/menuku-temp/api/paymentMethods.json`).then((result) =>
             result.forEach((data) => {
                const selectedPaymentMethod = getSelectedPaymentMethod(data, orderedData.payment_method);
 
@@ -102,7 +102,7 @@
          // window.setTimeout(() => {
          //    let metodePembayaranImg;
 
-         //    fetchData(`${baseURL}/api/paymentMethods.json`).then((result) => {
+         //    fetchData(`${baseURL}/menuku-temp/api/paymentMethods.json`).then((result) => {
          //       result.forEach((data) => {
          //          const client = cartData.filter((item) => item.metodePembayaran == data.text);
          //          if (client.length > 0) {

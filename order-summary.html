@@ -84,7 +84,7 @@
             const harga = [];
             let [subtotal, sc, tax, total] = [0, 0, 0, 0];
 
-            fetchData(`${baseURL}/api/paymentMethods.json`).then((result) => {
+            fetchData(`${baseURL}/menuku-temp/api/paymentMethods.json`).then((result) => {
                result.forEach((data) => {
                   if (data.text == tempPayment.method) {
                      element(".select-payment").children[0].src = `dist/img/icon/${data.img}`;
