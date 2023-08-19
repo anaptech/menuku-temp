@@ -19,7 +19,7 @@
       <script>
          let menuDetail = [];
 
-         fetchData(`${baseURL}/api/menu.json`).then((result) => {
+         fetchData(`${baseURL}/menuku-temp/api/menu.json`).then((result) => {
             result.forEach((data) => {
                if (data.menu.length) {
                   data.menu.forEach((menu) => {

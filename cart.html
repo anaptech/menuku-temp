@@ -118,7 +118,7 @@
 
             element("#hideAddOnBtn").addEventListener("click", () => closeAddOnWindow());
 
-            fetchData(`${baseURL}/api/menu.json`).then((result) => {
+            fetchData(`${baseURL}/menuku-temp/api/menu.json`).then((result) => {
                result.forEach((data) => {
                   $(data.menu).each((index, item) => {
                      menus.push(item);

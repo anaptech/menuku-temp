@@ -57,7 +57,7 @@
 
          const [menus, subharga] = [[], []];
 
-         fetchData(`${baseURL}/api/menu.json`).then((result) => {
+         fetchData(`${baseURL}/menuku-temp/api/menu.json`).then((result) => {
             result.forEach((data) => {
                data.menu.forEach((item) => {
                   menus.push(item);
