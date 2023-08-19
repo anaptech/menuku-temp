@@ -71,6 +71,7 @@
                      <h4 class="font-bold lg:text-lg xl:text-xl">Tambahan Menu</h4>
                      <i class="ri-close-line font-semibold text-lg xl:text-xl" role="button" id="hideAddOnBtn"></i>
                   </div>
+                  <input type="hidden" id="menu-id" />
                   <div id="listAddOn"></div>
                   <div class="mb-3 px-6">
                      <h5 class="font-bold text-sm sm:text-base xl:text-lg mb-3">Catatan <span class="font-normal text-7a">(Optional)</span></h5>
@@ -112,6 +113,7 @@
                element("#addOn").classList.remove("show");
                $("#listAddOn").html("");
                $("#note").val("");
+               $("#menu-id").val("");
 
                selectedAddOn = [];
             };
@@ -150,8 +152,9 @@
                });
 
                $(".showAddOnBtn").each((index, element) => {
-                  $(element).click((event) => {
+                  $(element).click(function (event) {
                      $(".addOnSubmitBtn").data("id", $(event.target).data("id"));
+                     $("#menu-id").val($(this).data("id"));
 
                      const checkMenu = getSelectedMenu($(event.target).data("id"));
 
@@ -186,15 +189,15 @@
                });
 
                $(".addOnSubmitBtn").click(function (event) {
-                  const checkMenu = getSelectedMenu($(this).data("id"));
+                  const checkMenu = getSelectedMenu($("#menu-id").val());
 
                   checkMenu.addon = selectedAddOn;
                   checkMenu.note = $("#note").val() ?? null;
 
-                  console.log("data-id", this.dataset.id);
+                  console.log("data-id", $("#menu-id").val());
                   console.log("note-value", element("#note").value);
 
-                  // element(`#note-${this.dataset.id}`).innerText = `Note: ${element("#note").value}`;
+                  element(`#note-${$("#menu-id").val()}`).innerText = `Note: ${element("#note").value}`;
 
                   setItem();
                   closeAddOnWindow();
