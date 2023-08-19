@@ -191,7 +191,10 @@
                   checkMenu.addon = selectedAddOn;
                   checkMenu.note = $("#note").val() ?? null;
 
-                  element(`#note-${this.dataset.id}`).innerText = `Note: ${element("#note").value}`;
+                  console.log("data-id", this.dataset.id);
+                  console.log("note-value", element("#note").value);
+
+                  // element(`#note-${this.dataset.id}`).innerText = `Note: ${element("#note").value}`;
 
                   setItem();
                   closeAddOnWindow();
