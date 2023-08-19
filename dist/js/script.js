@@ -1,6 +1,6 @@
 const myURL = new URL(window.location.href),
    baseURL = myURL.origin,
-   currentPage = myURL.pathname.split("/")[1];
+   currentPage = myURL.pathname.split("/")[2];
 
 const getParam = (key) => myURL.searchParams.get(key);
 
