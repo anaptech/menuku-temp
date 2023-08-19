@@ -90,7 +90,7 @@
          //    }
          // });
 
-         fetchData(`${baseURL}/api/menuCategory.json`).then((result) => {
+         fetchData(`${baseURL}/menuku-temp/api/menuCategory.json`).then((result) => {
             result.forEach((data) => (element("#grid-category").innerHTML += setGridCategory(data)));
 
             const btnList = [];
