@@ -185,7 +185,7 @@
 
             html2canvas(element("main")).then((canvas) => {
                let a = document.createElement("a");
-               a.download = "bill.png";
+               a.download = `bill-${orderedData.order_id}.png`;
                a.href = canvas.toDataURL("image/png");
                a.click();
                document.location.reload();
