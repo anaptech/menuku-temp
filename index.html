@@ -96,9 +96,9 @@
             }
          });
 
-         fetchData(`${baseURL}/api/menuCategory.json`).then((result) => result.forEach((data) => (element("#grid-category").innerHTML += setGridCategory(data))));
+         fetchData(`${baseURL}/menuku-temp/api/menuCategory.json`).then((result) => result.forEach((data) => (element("#grid-category").innerHTML += setGridCategory(data))));
 
-         fetchData(`${baseURL}/api/menu.json`).then((result) => {
+         fetchData(`${baseURL}/menuku-temp/api/menu.json`).then((result) => {
             result.forEach((data) => {
                menus.push(data);
 
