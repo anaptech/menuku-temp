@@ -38,7 +38,7 @@
 
       <section class="px-4 sm:px-6" id="recommendation">
          <div class="flex items-center justify-between pb-4 md:pt-1 lg:pt-2">
-            <h3 class="text-sm md:text-base lg:text-lg xl:text-xl">Recommendation</h3>
+            <h3 class="text-sm md:text-base lg:text-lg xl:text-xl">Andalan Dapur Betawi</h3>
             <a class="text-xs md:text-sm lg:text-base xl:text-lg text-8a font-medium" href="recommendation.html">See All</a>
          </div>
          <div class="swiper swiper-recommendation">
@@ -49,7 +49,9 @@
       <section class="px-4 sm:px-6" id="makanan">
          <div class="flex items-center justify-between pt-6 pb-4">
             <h3 class="text-sm md:text-base lg:text-lg xl:text-xl">Makanan</h3>
-            <span></span>
+            <button class="text-xs md:text-sm lg:text-base xl:text-lg text-8a font-medium gridView" type="button">
+               <span class="material-symbols-outlined">grid_view</span>
+            </button>
          </div>
          <div class="grid lg:grid-cols-2 lg:gap-x-5 gap-y-5" id="grid-makanan"></div>
       </section>
@@ -60,9 +62,11 @@
          </div>
          <div class="grid lg:grid-cols-2 lg:gap-x-5 gap-y-5" id="grid-minuman"></div>
       </section>
-      <!-- <div class="fixed bottom-24 left-1/2 -translate-x-1/2 z-[9999] invisible" id="btn-submit">
-         <a class="text-sm leading-normal text-white px-4 py-2 bg-[#CB1A12] rounded-10px" href="cart.html">Submit</a>
-      </div> -->
+
+      <a class="fixed bottom-24 left-1/2 -translate-x-1/2 z-[60]" href="cart.html" id="btn-submit">
+         <!-- <a class="text-sm leading-normal text-white px-4 py-2 bg-[#CB1A12] rounded-10px" href="cart.html">Submit</a> -->
+         <img src="dist/img/icon/go-to-cart.png" alt="" width="50" />
+      </a>
       <footer></footer>
       <script src="dist/js/script.js"></script>
       <script src="dist/js/layout.js"></script>
@@ -72,127 +76,99 @@
       <script src="https://code.iconify.design/3/3.0.0/iconify.min.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
       <script>
-         // element("#btnSearch").addEventListener("click", () => {
-         //    if (element(".btn-search-active")) {
-         //       console.log("submitted");
-         //    } else {
-         //       element("#btnSearch").classList.add("btn-search-active");
-         //       element("#inputSearch").classList.toggle("!w-[285px]");
-         //       element("#inputSearch").classList.toggle("!pr-[34px]");
-         //    }
-         // });
+         const [btnList, listMenuElements, menus] = [[], [], []];
 
-         // document.addEventListener("click", function (e) {
-         //    if (e.target != element("#btnSearch") && e.target != element("#inputSearch")) {
-         //       element("#btnSearch").classList.remove("btn-search-active");
-         //       element("#inputSearch").classList.remove("!pr-[34px]");
-         //       element("#inputSearch").classList.remove("!w-[285px]");
-         //    }
-         // });
-
-         fetchData(`${baseURL}/menuku-temp/api/menuCategory.json`).then((result) => {
-            result.forEach((data) => (element("#grid-category").innerHTML += setGridCategory(data)));
-
-            const btnList = [];
-            $("button").each((index, element) => {
-               if ($(element).hasClass("category")) {
-                  btnList.push(element);
-
-                  $(element).click((event) => {
-                     deactivateWhenAnotherActive({
-                        nodeList: btnList,
-                        targetEvent: event.target,
-                     });
-                  });
-               }
-            });
-         });
-
-         // const swiperCategories = new Swiper(".swiper-categories", {
-         //    slidesPerView: "auto",
-         //    spaceBetween: 15,
-         //    grabCursor: true,
-         // });
-
-         // const swiperRecommendation = new Swiper(".swiper-recommendation", {
-         //    slidesPerView: "auto",
-         //    spaceBetween: 10,
-         //    grabCursor: true,
-         // });
-
-         fetchData(`${baseURL}/menuku-temp/api/menu.json`).then((result) => {
-            result.forEach((data) => {
-               /* Cari data menu yang direkomendasikan */
-               // if (data.rekomendasi == true) {
-               //    element("#grid-recommendation").innerHTML += setCarouselRecommendation(data);
-               // }
-
-               /* Cari data menu yang kategorinya adalah makanan */
-               if (data.type_menu == "Makanan") {
-                  $(data.menu).each((index, item) => {
-                     element("#grid-makanan").innerHTML += setGridFood({
-                        menu: item,
-                        cart: getSelectedMenu(item.id),
-                     });
-                  });
-
-                  /* Cari data menu yang kategorinya adalah minuman */
-               }
-            });
-
-            $(".decreaseBtn").each((index, element) => {
-               $(element).click((event) => decreaseQuantity(event));
-            });
-
-            $(".increaseBtn").each((index, element) => {
-               $(element).click((event) => increaseQuantity(event));
-            });
-
-            $(".quantity").each((index, element) => setSelectedMenu(element));
-
-            const listMenuElements = [];
-
-            $(".list-menu").each((index, element) => listMenuElements.push(element));
-
-            const lastMenuElement = listMenuElements.pop();
-
-            $(lastMenuElement).addClass("pb-36");
-         });
-
-         $("#btnSearch").click((e) => {
-            if ($(e.target).hasClass(".btn-search-active")) {
+         element("#btnSearch").addEventListener("click", function (event) {
+            if (this.classList.contains(".btn-search-active")) {
+               console.log("submitted");
             } else {
-               $(e.target).addClass("btn-search-active");
-               $("#inputSearch").addClass("!w-[285px]");
-               $("#inputSearch").addClass("!pr-[34px]");
+               this.classList.add("btn-search-active");
+               this.nextElementSibling.classList.add("!w-[285px]");
+               this.nextElementSibling.classList.add("!pr-[34px]");
             }
          });
 
-         $(document).click((e) => {
-            if (e.target != $("#btnSearch")[0] && e.target != $("#inputSearch")[0]) {
-               $("#btnSearch").removeClass("btn-search-active");
-               $("#inputSearch").removeClass("!pr-[34px]");
-               $("#inputSearch").removeClass("!w-[285px]");
+         document.addEventListener("click", function (event) {
+            if (event.target != element("#btnSearch") && event.target != element("#inputSearch")) {
+               element("#btnSearch").classList.remove("btn-search-active");
+               element("#inputSearch").classList.remove("!pr-[34px]");
+               element("#inputSearch").classList.remove("!w-[285px]");
             }
          });
 
-         const swiperCategories = new Swiper(".swiper-categories", {
-            slidesPerView: "auto",
-            spaceBetween: 15,
-            grabCursor: true,
+         fetchData(`${baseURL}/api/menuCategory.json`).then((result) => result.forEach((data) => (element("#grid-category").innerHTML += setGridCategory(data))));
+
+         fetchData(`${baseURL}/api/menu.json`).then((result) => {
+            result.forEach((data) => {
+               menus.push(data);
+
+               data.menu.forEach((menu) => {
+                  data.type_menu == "Makanan" ? (element("#grid-makanan").innerHTML += setListMenu(menu)) : null;
+                  data.type_menu == "Minuman" ? (element("#grid-minuman").innerHTML += setListMenu(menu)) : null;
+
+                  Number(menu.is_recommendation) ? (element("#grid-recommendation").innerHTML += setCarouselRecommendation(menu)) : null;
+               });
+            });
          });
 
-         const swiperRecommendation = new Swiper(".swiper-recommendation", {
-            slidesPerView: "auto",
-            spaceBetween: 10,
-            grabCursor: true,
-         });
+         window.setTimeout(() => {
+            const swiperCategories = new Swiper(".swiper-categories", {
+               slidesPerView: "auto",
+               spaceBetween: 15,
+               grabCursor: true,
+            });
 
-         async function get(url, options = {}) {
-            const response = await fetch(url, options);
-            const result = await response.json();
-            return result;
-         }
+            element("button", true).forEach((btnElement) => {
+               if (btnElement.classList.contains("category")) {
+                  btnList.push(btnElement);
+
+                  btnElement.addEventListener("click", function () {
+                     deactivateWhenAnotherActive({ nodeList: btnList, targetEvent: this });
+                  });
+               } else if (btnElement.classList.contains("gridView")) {
+                  const classList = ["grid lg:grid-cols-2 lg:gap-x-5 gap-y-5", "grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-2 lg:gap-4"];
+
+                  btnElement.addEventListener("click", function () {
+                     this.classList.toggle("active");
+
+                     element("#grid-makanan").innerHTML = "";
+                     element("#grid-minuman").innerHTML = "";
+
+                     menus.forEach((data) => {
+                        data.menu.forEach((menu) => {
+                           if (this.classList.contains("active")) {
+                              this.innerHTML = "<span class='material-symbols-outlined'>list</span>";
+
+                              element("#grid-makanan").classList.value = classList[1];
+                              element("#grid-minuman").classList.value = classList[1];
+
+                              data.type_menu == "Makanan" ? (element("#grid-makanan").innerHTML += setGridMenu(menu)) : null;
+                              data.type_menu == "Minuman" ? (element("#grid-minuman").innerHTML += setGridMenu(menu)) : null;
+                           } else {
+                              this.innerHTML = "<span class='material-symbols-outlined'>grid_view</span>";
+
+                              element("#grid-makanan").classList.value = classList[0];
+                              element("#grid-minuman").classList.value = classList[0];
+
+                              data.type_menu == "Makanan" ? (element("#grid-makanan").innerHTML += setListMenu(menu)) : null;
+                              data.type_menu == "Minuman" ? (element("#grid-minuman").innerHTML += setGridDrink(menu)) : null;
+                           }
+
+                           setUpQuantity();
+                        });
+                     });
+                  });
+               }
+            });
+
+            const swiperRecommendation = new Swiper(".swiper-recommendation", {
+               slidesPerView: "auto",
+               spaceBetween: 10,
+               grabCursor: true,
+            });
+
+            setUpQuantity();
+         }, 1500);
       </script>
    </body>
 </html>

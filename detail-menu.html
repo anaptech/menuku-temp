@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
    <head></head>
-   <body class="bg-gradient min-h-screen">
+   <body class="bg-gradient min-h-screen overflow-hidden">
       <header class="absolute left-5 top-5 z-50">
          <a class="w-12 h-12 bg-f6 rounded-2xl flex items-center justify-center text-2xl" href="index.html">
             <span class="material-symbols-outlined">chevron_left</span>
          </a>
       </header>
-      <main class="relative pb-24 overflow-hidden" id="detail-menu"></main>
+      <main>
+         <section class="relative pb-24 overflow-hidden" id="detail-menu"></section>
+         <section class="w-full fixed -bottom-full transition-all duration-500 z-[70]" id="orderedMenu"></section>
+      </main>
       <footer></footer>
       <script src="dist/js/script.js"></script>
       <script src="dist/js/layout.js"></script>
@@ -17,18 +20,20 @@
       <script src="https://code.iconify.design/3/3.0.0/iconify.min.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.16/dist/sweetalert2.all.min.js"></script>
       <script>
-         let menuDetail = [];
+         let [menuDetail, selectedAddOn] = ["", []];
 
-         fetchData(`${baseURL}/menuku-temp/api/menu.json`).then((result) => {
+         const getId = myURL.searchParams.get("id");
+
+         element("main").innerHTML += addOnContainer();
+
+         fetchData(`${baseURL}/api/menu.json`).then((result) => {
             result.forEach((data) => {
                if (data.menu.length) {
                   data.menu.forEach((menu) => {
-                     if (menu.id == myURL.searchParams.get("id")) {
+                     if (menu.id == getId) {
                         menuDetail = menu;
 
-                        const checkMenu = getSelectedMenu(menu.id);
-
-                        element("#detail-menu").innerHTML += setMenuDetail({ menu, cart: checkMenu, currentPage });
+                        element("#detail-menu").innerHTML += setMenuDetail(menu);
                      }
                   });
                }
@@ -36,32 +41,112 @@
          });
 
          window.setTimeout(() => {
-            $(".decreaseBtn").each((index, element) => {
-               $(element).click((event) => decreaseQuantity(event));
+            setUpQuantity();
+
+            let selectedMenu = getSelectedMenu(getId);
+
+            if (selectedMenu) {
+               element(".harga").innerHTML = formatRupiah(Number(menuDetail.price) * selectedMenu.quantity);
+            }
+
+            element(".decreaseBtn").addEventListener("click", () => {
+               if (!Number(element(".quantity").dataset.value)) {
+                  element(".harga").innerHTML = formatRupiah(Number(menuDetail.price));
+               } else {
+                  element(".harga").innerHTML = formatRupiah(Number(menuDetail.price) * element(".quantity").dataset.value);
+               }
+            });
+            element(".increaseBtn").addEventListener("click", () => {
+               // selectedMenu = getSelectedMenu(getId);
+
+               element(".harga").innerHTML = formatRupiah(Number(menuDetail.price) * element(".quantity").dataset.value);
             });
 
-            $(".increaseBtn").each((index, element) => {
-               $(element).click((event) => increaseQuantity(event));
-            });
+            element(".showAddOnBtn").addEventListener("click", function () {
+               element(".addOnSubmitBtn").dataset.id = getId;
+               element("#menu-id").value = getId;
 
-            $(".quantity").each((index, element) => setSelectedMenu(element));
+               const checkMenu = getSelectedMenu(getId);
 
-            element(".btnSubmit").addEventListener("click", () => {
-               const paramSwal = {
-                  title: "",
-                  text: "Berhasil ditambahkan ke keranjang!",
-                  icon: "success",
-                  confirmButtonColor: "#CB1A12",
-                  iconHtml: "<img src='dist/img/icon/alert-ok.png'>",
-                  customClass: {
-                     icon: "!border-0",
-                  },
-               };
+               checkMenu ? (element("#note").value = checkMenu.note ?? null) : null;
 
-               Swal.fire(paramSwal).then(() => {
-                  document.location.href = "cart.html";
+               menuDetail.addon.forEach((menu) => {
+                  element("#addOn").classList.add("show");
+                  element("#listAddOn").innerHTML += setListAddOn(menu);
+               });
+
+               element(".addOnId", true).forEach((item) => {
+                  let checkAddOn;
+                  checkMenu ? (checkAddOn = getSelectedAddOn(checkMenu.addon, item.value)) : (checkAddOn = []);
+
+                  item.addEventListener("click", function () {
+                     if (this.checked) {
+                        selectedAddOn.push({ addon_id: this.value });
+                     } else {
+                        selectedAddOn = selectedAddOn.filter((item2) => item2.addon_id !== this.value);
+                     }
+                  });
+
+                  if (checkAddOn) {
+                     selectedAddOn.push({ addon_id: checkAddOn.addon_id });
+                     item.value == checkAddOn.addon_id ? (item.checked = true) : (item.checked = false);
+                  }
                });
             });
+
+            element(".addOnSubmitBtn").addEventListener("click", function () {
+               const checkMenu = getSelectedMenu(getId);
+
+               if (!checkMenu || !checkMenu.quantity) {
+                  const swalParams = {
+                     title: "",
+                     text: "Tentukan kuantitas produk!",
+                     icon: "success",
+                     confirmButtonColor: "#CB1A12",
+                     iconHtml: "<img src='dist/img/icon/alert-warning.png' class='h-full'>",
+                     customClass: {
+                        icon: "!border-0",
+                     },
+                  };
+
+                  Swal.fire(swalParams)
+                     .then(() => element("#addOn").classList.add("hidden"))
+                     .then(() => window.setTimeout(() => element("#addOn").classList.remove("hidden"), 500));
+               } else {
+                  checkMenu.addon = selectedAddOn;
+                  checkMenu.note = element("#note").value ?? null;
+
+                  element("#note").innerText = `Note: ${element("#note").value ?? ""}`;
+                  setItem("cart", cartData);
+
+                  selectedAddOn.forEach((item) => {
+                     const addOn = menuDetail.addon.filter((addon) => addon.id == item.addon_id)[0];
+
+                     item.addon_name = addOn.name;
+                  });
+
+                  element("#orderedMenu").innerHTML = orderedMenu(menuDetail, getSelectedMenu(menuDetail.id), selectedAddOn);
+
+                  window.setTimeout(() => {
+                     element("#orderedMenu").classList.add("show");
+                     element("#hideOrderedMenuBtn").addEventListener("click", () => element("#orderedMenu").classList.remove("show"));
+                  }, 300);
+               }
+
+               closeAddOnWindow();
+               setMenuHasQuantity();
+            });
+
+            function closeAddOnWindow() {
+               element("#addOn").classList.remove("show");
+               element("#listAddOn").innerHTML = "";
+               element("#note").value = "";
+               element("#menu-id").value = "";
+
+               selectedAddOn = [];
+            }
+
+            element("#hideAddOnBtn").addEventListener("click", () => closeAddOnWindow());
          }, 1500);
       </script>
    </body>

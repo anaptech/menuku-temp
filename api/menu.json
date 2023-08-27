@@ -18,7 +18,7 @@
             "created_at": null,
             "updated_at": null,
             "deleted_at": null,
-            "is_recommendation": "0",
+            "is_recommendation": "1",
             "type_menu_id": "bd134384-d3ea-11ed-9b7e-8481f960f3a1",
             "addon": [
                {
@@ -53,7 +53,7 @@
             "name": "Gado - Gado",
             "description": "Gado - Gado",
             "price": "100000",
-            "stock": "100",
+            "stock": "0",
             "image": "https://i.pinimg.com/736x/95/b1/3b/95b13bd346eb689d1a7b4956e0b16546--gado-gado-good-ideas.jpg",
             "timeline": null,
             "created_at": null,
@@ -80,6 +80,47 @@
                   "name": "Kerupuk Udang",
                   "description": "Kerupuk Udang",
                   "price": "10000",
+                  "stock": "10",
+                  "created_at": null,
+                  "updated_at": null,
+                  "deleted_at": null,
+                  "required": "0"
+               }
+            ]
+         },
+         {
+            "id": "098b2cf4-d3eb-11ed-9b7e-8481f960f2a1",
+            "resto_id": "493f7de2-d3d1-11ed-9b7e-8481f960f3a1",
+            "name": "Nasi Goreng",
+            "description": "Nasi Goreng",
+            "price": "10000",
+            "stock": "1",
+            "image": "https://tinyurl.com/y4yb2rwp",
+            "timeline": null,
+            "created_at": null,
+            "updated_at": null,
+            "deleted_at": null,
+            "is_recommendation": "1",
+            "type_menu_id": "bd134384-d3ea-11ed-9b7e-8481f960f3a1",
+            "addon": [
+               {
+                  "id": "09122c22-d3eb-11ed-9b7e-8481f960f2a1",
+                  "menu_id": "098b2cf4-d3eb-11ed-9b7e-8481f960f2a1",
+                  "name": "Ati Ampela",
+                  "description": "Ati Ampela",
+                  "price": "5000",
+                  "stock": "10",
+                  "created_at": null,
+                  "updated_at": null,
+                  "deleted_at": null,
+                  "required": "0"
+               },
+               {
+                  "id": "4fa89316-d3eb-11ed-9b7e-8481f960f2a1",
+                  "menu_id": "098b2cf4-d3eb-11ed-9b7e-8481f960f2a1",
+                  "name": "Telur",
+                  "description": "Telur",
+                  "price": "3000",
                   "stock": "10",
                   "created_at": null,
                   "updated_at": null,

@@ -117,6 +117,17 @@ const disabledBtn = (param) => {
    }
 };
 
+const setUpQuantity = () => {
+   element(".decreaseBtn", true).forEach((element) => element.addEventListener("click", (event) => decreaseQuantity(event.target)));
+   element(".increaseBtn", true).forEach((element) => element.addEventListener("click", (event) => increaseQuantity(event.target)));
+
+   element(".quantity", true).forEach((element) => {
+      setSelectedMenu(element);
+
+      !Number(element.dataset.value) ? element.nextElementSibling.classList.add("off") : null;
+   });
+};
+
 /* if (cartData.length >= 1) {
             element("#btn-submit").classList.replace("invisible", "visible");
          } else {

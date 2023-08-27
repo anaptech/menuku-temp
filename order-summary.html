@@ -84,7 +84,7 @@
             const harga = [];
             let [subtotal, sc, tax, total] = [0, 0, 0, 0];
 
-            fetchData(`${baseURL}/menuku-temp/api/paymentMethods.json`).then((result) => {
+            fetchData(`${baseURL}/api/paymentMethods.json`).then((result) => {
                result.forEach((data) => {
                   if (data.text == tempPayment.method) {
                      element(".select-payment").children[0].src = `dist/img/icon/${data.img}`;
@@ -96,7 +96,7 @@
                });
             });
 
-            fetchData(`${baseURL}/menuku-temp/api/menu.json`).then((result) => {
+            fetchData(`${baseURL}/api/menu.json`).then((result) => {
                result.forEach((data) => {
                   $(data.menu).each((index, item) => {
                      menus.push(item);
@@ -140,7 +140,7 @@
                element(".select-payment").addEventListener("click", function () {
                   tempPayment.total = total;
 
-                  setItem({ key: "temp-payment", value: tempPayment });
+                  setItem("temp-payment", tempPayment);
                });
 
                element(".select-payment").children[1].innerText = tempPayment.method ?? "Cash";
@@ -172,8 +172,8 @@
                      tempPayment = {};
                   })
                   .then(() => {
-                     setItem({ key: "ordered", value: orderedData });
-                     setItem({ key: "temp-payment", value: tempPayment });
+                     setItem("ordered", orderedData);
+                     setItem("temp-payment", tempPayment);
                      document.location.href = "bill.html";
                   });
             });

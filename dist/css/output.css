@@ -624,6 +624,10 @@ video {
   left: 50%;
 }
 
+.top-0 {
+  top: 0px;
+}
+
 .right-4 {
   right: 1rem;
 }
@@ -640,8 +644,16 @@ video {
   z-index: 50;
 }
 
+.z-\[70\] {
+  z-index: 70;
+}
+
 .z-10 {
   z-index: 10;
+}
+
+.z-\[60\] {
+  z-index: 60;
 }
 
 .z-\[9999\] {
@@ -675,6 +687,16 @@ video {
 .my-2 {
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
+}
+
+.mx-6 {
+  margin-left: 1.5rem;
+  margin-right: 1.5rem;
+}
+
+.my-auto {
+  margin-top: auto;
+  margin-bottom: auto;
 }
 
 .mt-5 {
@@ -731,6 +753,14 @@ video {
 
 .mb-6 {
   margin-bottom: 1.5rem;
+}
+
+.mt-2 {
+  margin-top: 0.5rem;
+}
+
+.ml-auto {
+  margin-left: auto;
 }
 
 .mr-6 {
@@ -819,6 +849,10 @@ video {
   height: max-content !important;
 }
 
+.h-\[12px\] {
+  height: 12px;
+}
+
 .h-\[33px\] {
   height: 33px;
 }
@@ -827,8 +861,8 @@ video {
   height: 14px;
 }
 
-.h-\[12px\] {
-  height: 12px;
+.h-96 {
+  height: 24rem;
 }
 
 .h-6 {
@@ -1006,6 +1040,10 @@ video {
   gap: 0.25rem;
 }
 
+.gap-6 {
+  gap: 1.5rem;
+}
+
 .gap-y-2 {
   row-gap: 0.5rem;
 }
@@ -1109,10 +1147,6 @@ video {
   border-width: 0px !important;
 }
 
-.border-0 {
-  border-width: 0px;
-}
-
 .border-b {
   border-bottom-width: 1px;
 }
@@ -1125,6 +1159,11 @@ video {
 .border-slate-300 {
   --tw-border-opacity: 1;
   border-color: rgb(203 213 225 / var(--tw-border-opacity));
+}
+
+.border-b-\[\#cdcdcd\] {
+  --tw-border-opacity: 1;
+  border-bottom-color: rgb(205 205 205 / var(--tw-border-opacity));
 }
 
 .bg-f9 {
@@ -1179,6 +1218,10 @@ video {
   background-color: rgba(70,70,70,0.3);
 }
 
+.bg-\[rgba\(0\2c 0\2c 0\2c \.7\)\] {
+  background-color: rgba(0,0,0,.7);
+}
+
 .bg-\[\#FFFBF7\] {
   --tw-bg-opacity: 1;
   background-color: rgb(255 251 247 / var(--tw-bg-opacity));
@@ -1186,6 +1229,11 @@ video {
 
 .bg-\[rgba\(245\2c 245\2c 245\2c 0\.3\)\] {
   background-color: rgba(245,245,245,0.3);
+}
+
+.bg-d8 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(216 216 216 / var(--tw-bg-opacity));
 }
 
 .bg-header {
@@ -1541,6 +1589,10 @@ video {
   accent-color: #CB1A12;
 }
 
+.opacity-30 {
+  opacity: 0.3;
+}
+
 .shadow-\[2px_2px_4px_rgba\(203\2c 26\2c 18\2c 0\.1\)\] {
   --tw-shadow: 2px 2px 4px rgba(203,26,18,0.1);
   --tw-shadow-colored: 2px 2px 4px var(--tw-shadow-color);
@@ -1622,6 +1674,10 @@ button:is(.category):where(.active) span {
 
 #addOn:where(.show) {
   top: 0.75rem !important;
+  bottom: 0px !important;
+}
+
+#orderedMenu:where(.show) {
   bottom: 0px !important;
 }
 
@@ -1757,16 +1813,16 @@ footer a:where(.active) {
     height: 360px;
   }
 
-  .sm\:h-\[19px\] {
-    height: 19px;
-  }
-
   .sm\:h-\[21px\] {
     height: 21px;
   }
 
   .sm\:h-\[14px\] {
     height: 14px;
+  }
+
+  .sm\:h-\[19px\] {
+    height: 19px;
   }
 
   .sm\:min-w-\[120px\] {

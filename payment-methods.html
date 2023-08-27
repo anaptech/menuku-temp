@@ -31,21 +31,21 @@
       <script>
          element(".total").innerText = formatRupiah(tempPayment.total);
 
-         fetchData(`${baseURL}/menuku-temp/api/paymentMethods.json`).then((result) => result.forEach((data) => (element("#metode-pembayaran").innerHTML += setPaymentMethods(data))));
+         fetchData(`${baseURL}/api/paymentMethods.json`).then((result) => result.forEach((data) => (element("#metode-pembayaran").innerHTML += setPaymentMethods(data))));
 
          window.setTimeout(() => {
             const [metodePembayaran, checkboxList] = [[], []];
             element(".metode-pembayaran", true).forEach((element) => {
                metodePembayaran.push(element);
 
-               element.addEventListener("click", function () {
+               element.addEventListener("click", function (event) {
                   const checkbox = this.children[2].children[0].children[0];
 
                   checkbox.checked = true;
 
                   deactivateWhenAnotherActive({
                      nodeList: metodePembayaran,
-                     targetEvent: this,
+                     targetEvent: event.target,
                      checkboxList: checkboxList,
                      checkedCheckbox: checkbox,
                   });
@@ -53,7 +53,7 @@
                   if (checkbox.checked) {
                      tempPayment.method = this.dataset.value;
 
-                     setItem({ key: "temp-payment", value: tempPayment });
+                     setItem("temp-payment", tempPayment);
                   }
                });
 
@@ -63,9 +63,7 @@
                }
             });
 
-            element(".input-metode-pembayaran", true).forEach((element) => {
-               checkboxList.push(element);
-            });
+            element(".input-metode-pembayaran", true).forEach((element) => checkboxList.push(element));
          }, 1000);
       </script>
    </body>

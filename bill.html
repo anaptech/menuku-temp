@@ -57,7 +57,7 @@
 
          const [menus, subharga] = [[], []];
 
-         fetchData(`${baseURL}/menuku-temp/api/menu.json`).then((result) => {
+         fetchData(`${baseURL}/api/menu.json`).then((result) => {
             result.forEach((data) => {
                data.menu.forEach((item) => {
                   menus.push(item);
@@ -68,10 +68,11 @@
             });
          });
 
-         fetchData(`${baseURL}/menuku-temp/api/paymentMethods.json`).then((result) =>
+         fetchData(`${baseURL}/api/paymentMethods.json`).then((result) =>
             result.forEach((data) => {
                const selectedPaymentMethod = getSelectedPaymentMethod(data, orderedData.payment_method);
 
+               console.log(orderedData);
                selectedPaymentMethod ? (paymentMethod = selectedPaymentMethod) : null;
             })
          );
@@ -81,7 +82,7 @@
          element("#tanggal").children[1].innerText = orderedData.date;
 
          window.setTimeout(() => {
-            menuDetail = getFilteredMenu(menus);
+            menuDetail = getFilteredMenu(menus, orderedData.menu);
 
             const quantityElement = [];
 
@@ -102,7 +103,7 @@
          // window.setTimeout(() => {
          //    let metodePembayaranImg;
 
-         //    fetchData(`${baseURL}/menuku-temp/api/paymentMethods.json`).then((result) => {
+         //    fetchData(`${baseURL}/api/paymentMethods.json`).then((result) => {
          //       result.forEach((data) => {
          //          const client = cartData.filter((item) => item.metodePembayaran == data.text);
          //          if (client.length > 0) {

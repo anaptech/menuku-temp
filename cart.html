@@ -81,7 +81,6 @@
                      <button class="w-full py-3 text-center text-white bg-danger rounded-10px addOnSubmitBtn" type="button">Submit</button>
                   </div>
                </div>
-               s
             </div>
          </section>
       </main>
@@ -94,62 +93,49 @@
       <script src="https://code.iconify.design/3/3.0.0/iconify.min.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.16/dist/sweetalert2.all.min.js"></script>
       <script>
-         let selectedAddOn = [],
-            menus = [],
-            menuDetail = [];
+         let [selectedAddOn, menus, menuDetail] = [[], [], []];
 
          if (!cartData.length) {
             element("main").innerHTML = "";
-            Swal.fire({
+
+            const swalParam = {
                title: "",
                text: "Keranjang kosong!",
                icon: "info",
                confirmButtonColor: "#CB1A12",
-            }).then(() => {
-               document.location.href = "index.html";
-            });
+            };
+
+            Swal.fire(swalParam).then(() => (document.location.href = "index.html"));
          } else {
             const closeAddOnWindow = () => {
                element("#addOn").classList.remove("show");
-               $("#listAddOn").html("");
-               $("#note").val("");
-               $("#menu-id").val("");
+               element("#listAddOn").innerHTML = "";
+               element("#note").value = "";
+               element("#menu-id").value = "";
 
                selectedAddOn = [];
             };
 
             element("#hideAddOnBtn").addEventListener("click", () => closeAddOnWindow());
 
-            fetchData(`${baseURL}/menuku-temp/api/menu.json`).then((result) => {
+            fetchData(`${baseURL}/api/menu.json`).then((result) => {
                result.forEach((data) => {
-                  $(data.menu).each((index, item) => {
+                  data.menu.forEach((item) => {
                      menus.push(item);
-                     const selectedMenu = getSelectedMenu(item.id);
 
-                     if (selectedMenu) {
-                        element("#grid-menu").innerHTML += setGridMenu({
-                           menu: item,
-                           cart: selectedMenu,
-                        });
+                     const checkMenu = getSelectedMenu(item.id);
+                     if (checkMenu) {
+                        element("#grid-menu").innerHTML += setCartMenu(item, checkMenu);
                      }
                   });
                });
             });
 
             window.setTimeout(() => {
-               $(cartData).each((index, item) => {
-                  const cartMenu = menus.filter((menu) => menu.id == item.id)[0];
+               menuDetail = getFilteredMenu(menus, cartData);
 
-                  menuDetail.push(cartMenu);
-               });
-
-               $(".decreaseBtn").each((index, element) => {
-                  $(element).click((event) => decreaseQuantity(event));
-               });
-
-               $(".increaseBtn").each((index, element) => {
-                  $(element).click((event) => increaseQuantity(event));
-               });
+               element(".decreaseBtn", true).forEach((element) => element.addEventListener("click", (event) => decreaseQuantity(event.target)));
+               element(".increaseBtn", true).forEach((element) => element.addEventListener("click", (event) => increaseQuantity(event.target)));
 
                $(".showAddOnBtn").each((index, element) => {
                   $(element).click(function (event) {
@@ -218,6 +204,8 @@
                      subtotalKeseluruhan += Number(subtotalHargaPerMenu[key]);
                   }
 
+                  console.log(param);
+
                   $("#subtotal").text(formatRupiah(subtotalKeseluruhan));
 
                   const tax = formatHarga($("#tax").text()),
@@ -227,51 +215,50 @@
                   $("#total").text(formatRupiah(totalKeseluruhan));
                };
 
-               let [items, quantity, hargaPerMenu] = [[], [], []];
+               let [items, quantity, subharga] = [[], [], []];
 
-               $(".quantity").each((index, element) => {
+               element(".quantity", true).forEach((element) => {
                   setSelectedMenu(element);
 
-                  items.push($(element).data("id"));
-                  quantity.push($(element).data("value"));
+                  items.push(element.dataset.id);
+                  quantity.push(element.dataset.value);
 
                   const container = $(element).parents().get(2);
                   const wrapper = $(container).children().get(0);
                   const price = $(wrapper).children().get(1);
 
-                  $(price).text(formatRupiah(formatHarga($(price).text()) * $(element).data("value")));
+                  $(price).text(formatRupiah(formatHarga($(price).text()) * element.dataset.value));
                });
 
-               $(menuDetail).each((index, item) => hargaPerMenu.push(Number(item.price)));
-
-               setTotalKeseluruhan({
-                  quantity: quantity,
-                  hargaPerMenu: hargaPerMenu,
-               });
+               setTotalKeseluruhan({ quantity, hargaPerMenu: getHargaPerMenu(menuDetail) });
 
                /* INCREASE OR DECREASE BUTTON EVENT HANDLER [START] */
                document.addEventListener("click", (event) => {
                   const targetClass = event.target.classList;
 
                   if (targetClass.contains("increaseBtn") || targetClass.contains("decreaseBtn")) {
-                     const [items, quantity] = [[], []];
+                     quantity = [];
 
-                     $(".quantity").each((index, element) => {
+                     element(".quantity", true).forEach((element) => {
                         setSelectedMenu(element);
 
-                        items.push($(element).data("id"));
-                        quantity.push($(element).data("value"));
+                        quantity.push(element.dataset.value);
 
-                        const container = $(element).parents().get(2);
-                        const wrapper = $(container).children().get(0);
-                        const price = $(wrapper).children().get(1);
+                        const container = element.parentElement.parentElement.parentElement,
+                           wrapper = container.children[0],
+                           price = wrapper.children[1],
+                           selectedMenu = menuDetail.filter((menu) => menu.id == element.dataset.id)[0];
 
-                        const selectedMenu = menuDetail.filter((item) => item.id == $(element).data("id"))[0];
+                        console.log(element.dataset.value);
 
-                        $(price).text(formatRupiah(selectedMenu.price * $(element).data("value")));
+                        if (!Number(element.dataset.value)) {
+                           container.parentElement.classList.add("hidden");
+                        }
+
+                        price.innerHTML = formatRupiah(Number(selectedMenu.price) * element.dataset.value);
                      });
 
-                     setTotalKeseluruhan({ quantity, hargaPerMenu });
+                     setTotalKeseluruhan({ quantity, hargaPerMenu: getHargaPerMenu(menuDetail) });
 
                      $("#jumlah-item").text(getMenuHasQuantity().length);
                   }

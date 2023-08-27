@@ -23,14 +23,16 @@
       <script src="dist/js/cart.js"></script>
       <script src="https://code.iconify.design/3/3.0.0/iconify.min.js"></script>
       <script>
-         fetchData(`${baseURL}/menuku-temp/api/menu.json`).then((result) => {
+         fetchData(`${baseURL}/api/menu.json`).then((result) => {
             result.forEach((data) => {
                if (data.menu.length) {
                   data.menu.forEach((menu) => {
-                     Number(menu.is_recommendation) ? (element("#grid-menu").innerHTML += setGridRecommendation(menu)) : null;
+                     Number(menu.is_recommendation) ? (element("#grid-menu").innerHTML += setGridMenu(menu)) : null;
                   });
                }
             });
+
+            setUpQuantity();
          });
       </script>
    </body>

@@ -1,18 +1,21 @@
-let cartData = JSON.parse(localStorage.getItem("cart")) ?? [];
-let tempPayment = JSON.parse(localStorage.getItem("temp-payment")) ?? {};
+const getItem = (key) => {
+   return JSON.parse(localStorage.getItem(key));
+};
 
-let orderedData = JSON.parse(localStorage.getItem("ordered")) ?? {},
-   paymentData = JSON.parse(localStorage.getItem("payment")) ?? {},
-   orderSummary = JSON.parse(localStorage.getItem("order-summary")) ?? {};
+let cartData = getItem("cart") ?? [],
+   tempPayment = getItem("temp-payment") ?? {},
+   orderedData = getItem("ordered") ?? {},
+   paymentData = getItem("payment") ?? {},
+   orderSummary = getItem("order-summary") ?? {};
 
 const getSelectedMenu = (menu_id) => {
    return cartData.filter((menu) => menu.id == menu_id)[0];
 };
 
-const getFilteredMenu = (menus) => {
+const getFilteredMenu = (listMenu, selectedMenu) => {
    filteredMenu = [];
 
-   orderedData.menu.forEach((item) => filteredMenu.push(menus.filter((menu) => menu.id == item.id)[0]));
+   selectedMenu.forEach((item) => filteredMenu.push(listMenu.filter((menu) => menu.id == item.id)[0]));
 
    return filteredMenu;
 };
@@ -30,64 +33,77 @@ const getMenuHasQuantity = () => {
 };
 
 const setMenuHasQuantity = () => {
-   setItem({ value: getMenuHasQuantity() });
+   setItem("cart", getMenuHasQuantity());
 };
 
-const decreaseQuantity = (event) => {
-   setQuantityInput({
-      element: $(event.target).next(),
-      method: "decrement",
-   });
+const decreaseQuantity = (element) => {
+   quantityElement = element.nextElementSibling;
+
+   setQuantityInput(quantityElement, "decrement");
 
    checkData = getSelectedMenu(id);
 
    checkData.quantity = number;
 
-   setItem();
-   setSelectedMenu($(event.target).siblings(".quantity")[0]);
+   setItem("cart", cartData);
+   setSelectedMenu(quantityElement);
 };
 
-const increaseQuantity = (event) => {
-   setQuantityInput({
-      element: $(event.target).prev(),
-      method: "increment",
-   });
+const increaseQuantity = (element) => {
+   quantityElement = element.previousElementSibling;
 
-   storeCart({
-      menuID: id,
-      quantity: number,
-   });
+   setQuantityInput(quantityElement, "increment");
+
+   storeCart({ menu_id: id, quantity: number });
 
    orderedData ? (orderedData = {}) : "";
 
-   setItem({ key: "ordered", value: orderedData });
-   setSelectedMenu($(event.target).siblings(".quantity")[0]);
+   setItem("ordered", orderedData);
+   setSelectedMenu(quantityElement);
 };
 
-const setQuantityInput = (properties) => {
-   id = properties.element.data("id");
-   number = Number(properties.element.data("value"));
+const setQuantityInput = (element, method) => {
+   id = element.dataset.id;
+   number = Number(element.dataset.value);
 
-   properties.method == "decrement" ? number-- : number++;
+   method == "decrement" ? number-- : number++;
 
-   properties.element.data("value", number);
-   properties.element.text(number);
+   element.dataset.value = number;
+   element.innerText = number;
+
+   !number ? element.nextElementSibling.classList.add("off") : element.nextElementSibling.classList.remove("off");
+};
+
+const setBtnStyle = (quantity, element) => {
+   if (!quantity) {
+      element.style = `
+         background-color: crimson;color: white;
+         border-radius: 50%;
+         width: max-content;
+         display: flex;
+         justify-items: center;
+         align-items: center;
+         padding: 1px 4px;
+      `;
+   } else {
+      element.style = "";
+   }
 };
 
 const storeCart = (data) => {
-   checkData = getSelectedMenu(data.menuID);
+   checkData = getSelectedMenu(data.menu_id);
 
    if (checkData) {
       checkData.quantity = data.quantity;
    } else {
       cartData.push({
-         id: data.menuID,
+         id: data.menu_id,
          quantity: Number(data.quantity),
          addon: data.addon ?? [],
       });
    }
 
-   setItem({ value: cartData });
+   setItem("cart", cartData);
 };
 
 let randomNumber = new Uint32Array(10);
@@ -96,29 +112,45 @@ randomNumber = window.crypto.getRandomValues(randomNumber);
 const orderMenu = (data) => {
    orderedData = {
       order_id: randomNumber[0],
-      city: "Bogor",
-      voucher_id: "965d8784-d3ec-11ed-9b7e-8481f960f3a1",
-      resto_id: "493f7de2-d3d1-11ed-9b7e-8481f960f3a1",
-      table_number: 1,
+      city: data.city ?? "Bogor",
+      voucher_id: data.voucher_id ?? "965d8784-d3ec-11ed-9b7e-8481f960f3a1",
+      resto_id: data.resto_id ?? "493f7de2-d3d1-11ed-9b7e-8481f960f3a1",
+      table_number: data.table_number ?? 1,
       menu: data.menu ?? [],
    };
 
-   cartData = [];
-
-   setItem({ key: "ordered", value: orderedData });
-   clearItem("cart");
+   setItem("ordered", orderedData);
+   clearItem("cart", []);
 };
 
 const setSelectedMenu = (quantityElement) => {
-   selectedMenu = getSelectedMenu($(quantityElement).data("id"));
+   selectedMenu = getSelectedMenu(quantityElement.dataset.id);
 
    if (selectedMenu) {
-      $(quantityElement).data("value", selectedMenu.quantity);
-      $(quantityElement).text(selectedMenu.quantity);
+      quantityElement.dataset.value = selectedMenu.quantity;
+      quantityElement.innerHTML = selectedMenu.quantity;
    }
 
-   wrapperElement = $(quantityElement).parents(".card-resto-menu-makanan")[0] ?? $(quantityElement).parents(".wrapper")[0];
-   decreaseBtn = $(quantityElement).siblings()[0];
+   /* <div> THIS IS WRAPPER ELEMENT'S POSITION
+         <a>
+            <img/>
+         </a>
+         <div>
+            <a>
+               <h3>...</h3>
+               <h2>...</h2>
+            </a>
+            <a>...</a>
+            <div>
+               <span class="decreaseBtn" role="button"></span> THIS IS DECREASE BUTTON ELEMENT'S POSITION
+               <span class="quantity"></span> THIS IS QUANTITY ELEMENT'S POSITION
+               <span class="increaseBtn" role="button"></span> THIS IS INCREASE BUTTON ELEMENT'S POSITION
+            </div>
+         </div>
+      </div> */
+
+   wrapperElement = quantityElement.parentElement.parentElement.parentElement;
+   decreaseBtn = quantityElement.previousElementSibling;
 
    elements = {
       quantity: quantityElement,
@@ -131,31 +163,26 @@ const setSelectedMenu = (quantityElement) => {
 };
 
 const setSelectedMenuClass = (elements) => {
-   if (Number($(elements.quantity).data("value")) <= 0) {
-      $(elements.wrapper).hasClass("wrapper") ? $(elements.wrapper).addClass("hidden") : $(elements.wrapper).removeClass("selected-menu");
-      $(elements.decreaseBtn).addClass("!pointer-events-none");
-      $(elements.decreaseBtn).addClass("invisible");
-      $(elements.quantity).text("");
+   if (!Number(elements.quantity.dataset.value)) {
+      elements.wrapper.classList.remove("selected-menu");
+      elements.decreaseBtn.classList.add("!pointer-events-none");
+      elements.decreaseBtn.classList.add("invisible");
+      elements.quantity.innerHTML = "";
    } else {
-      $(elements.wrapper).hasClass("card-resto-menu-makanan") && $(elements.wrapper).addClass("selected-menu");
-      $(elements.decreaseBtn).removeClass("!pointer-events-none");
-      $(elements.decreaseBtn).removeClass("invisible");
+      elements.wrapper.classList.add("selected-menu");
+      elements.decreaseBtn.classList.remove("!pointer-events-none");
+      elements.decreaseBtn.classList.remove("invisible");
    }
 };
 
-const setItem = (properties = {}) => {
-   let key = properties.key ?? "cart";
-   let value = properties.value ?? cartData;
-
+const setItem = (key, value) => {
    typeof value == "object" ? (value = JSON.stringify(value)) : null;
 
    localStorage.setItem(key, value);
 };
 
-const clearItem = (key = {}) => {
-   key = key ?? "cart";
-
-   localStorage.removeItem(key, []);
+const clearItem = (key, value) => {
+   localStorage.removeItem(key, value);
 };
 
 const searchMenu = (param) => {
